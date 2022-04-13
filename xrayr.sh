@@ -135,11 +135,11 @@ read -p "Giới hạn thiết bị :" DeviceLimit
   echo "-------------------------------"
   
   #CertDomain:
-#read -p "ip hoăc domain:" CertDomain
- # [ -z "${CertDomain}" ] && CertDomain="0"
- # echo "-------------------------------"
-  #echo "CertDomain: ${CertDomain}"
-  #echo "-------------------------------"
+read -p "ip hoăc domain:" CertDomain
+  [ -z "${CertDomain}" ] && CertDomain="0"
+  echo "-------------------------------"
+  echo "CertDomain: ${CertDomain}"
+  echo "-------------------------------"
   
   
 }
