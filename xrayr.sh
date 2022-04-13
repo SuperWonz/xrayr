@@ -105,21 +105,20 @@ error_detect_depends() {
 
 # Pre-installation settings
 pre_install_docker_compose() {
+  #link web:
+read -p "link web(bao gồm https://): " ApiHost
+  [ -z "${ApiHost}" ] && ApiHost="0"
+  echo "-------------------------------"
+  echo "Link web: ${ApiHost}"
+  echo "-------------------------------"
+  
+  #key web:
+read -p "key web: " ApiKey
+  [ -z "${ApiKey}" ] && ApiKey="0"
+  echo "-------------------------------"
+  echo "key web: ${ApiKey}"
+  echo "-------------------------------"
 
- echo -e "[1] 4gdatasieure.xyz"
-  echo -e "[2] 4gdatasieure.xyz"
-  read -p "Web đang sử dụng:" api_host
-  if [ "$api_host" == "1" ]; then
-    api_host="https://4gdatasieure.xyz"
-  elif [ "$api_host" == "2" ]; then
-    api_host="https://4gdatasieure.me"
-  else 
-    api_host="https://4gdatasieure.xyz"
-  fi
-
-  echo "--------------------------------"
-  echo "Bạn đã chọn ${api_host}"
-  echo "--------------------------------"
   
   read -p " ID nút (Node_ID):" node_id
   [ -z "${node_id}" ] && node_id=0
