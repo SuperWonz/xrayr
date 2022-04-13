@@ -2,18 +2,18 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
-# Thư mục hiện tại
+# Current folder
 cur_dir=$(pwd)
-# Màu sắc
+# Color
 red='\033[0;31m'
 green='\033[0;32m'
 #yellow='\033[0;33m'
 plain='\033[0m'
-operation=(Install Update UpdateConfig logs restart delete)
-# Đảm bảo rằng chỉ người chủ mới có thể chạy tập lệnh của chúng tôi
+operation=(Install stop start Update UpdateConfig logs restart delete)
+# Make sure only root can run our script
 [[ $EUID -ne 0 ]] && echo -e "[${red}Error${plain}] Chưa vào root kìa !, vui lòng xin phép ROOT trước!" && exit 1
 
-# Kiểm tra hệ thống
+#Check system
 check_sys() {
   local checkType=$1
   local value=$2
@@ -58,7 +58,7 @@ check_sys() {
   fi
 }
 
-# Nhận phiên bản
+# Get version
 getversion() {
   if [[ -s /etc/redhat-release ]]; then
     grep -oE "[0-9.]+" /etc/redhat-release
@@ -67,7 +67,7 @@ getversion() {
   fi
 }
 
-# Phiên bản CentOS
+# CentOS version
 centosversion() {
   if check_sys sysRelease centos; then
     local code=$1
@@ -94,61 +94,64 @@ get_char() {
 }
 error_detect_depends() {
   local command=$1
-  local depend=$(echo "  ${command}" | awk '{print $4}')
-  echo -e "  [${green}Info${plain}] Bắt đầu cài đặt các gói ${depend}"
+  local depend=$(echo "${command}" | awk '{print $4}')
+  echo -e "[${green}Info${plain}] Bắt đầu cài đặt các gói ${depend}"
   ${command} >/dev/null 2>&1
   if [ $? -ne 0 ]; then
-    echo -e "  [${red}Error${plain}] Cài đặt gói không thành công ${red}${depend}${plain}"
+    echo -e "[${red}Error${plain}] Cài đặt gói không thành công ${red}${depend}${plain}"
     exit 1
   fi
 }
 
-# Cài đặt trước cài đặt
-  echo "Bản việt hóa được thực hiện bởi @lisa_is_me"
-  echo "--------------------------------"
+# Pre-installation settings
 pre_install_docker_compose() {
-  echo -e "  [1] 4gdatasieure.xyz"
-  echo -e "  [2] 4gdatasieure.xyz"
-  read -p "  Web đang sử dụng:" api_host
-  if [ "$api_host" == "1" ]; then
-    api_host="https://4gdatasieure.xyz/"
-  elif [ "$api_host" == "2" ]; then
-    api_host="https://4gdatasieure.xyz/"
-  else 
-    api_host="${api_host}"
-  fi
+  #link web:
+read -p "link web(bao gồm https://): " ApiHost
+  [ -z "${ApiHost}" ] && ApiHost="0"
+  echo "-------------------------------"
+  echo "Link web: ${ApiHost}"
+  echo "-------------------------------"
+  
+  #key web:
+read -p "key web: " ApiKey
+  [ -z "${ApiKey}" ] && ApiKey="0"
+  echo "-------------------------------"
+  echo "key web: ${ApiKey}"
+  echo "-------------------------------"
 
-  echo "--------------------------------"
-  echo "  Bạn đã chọn ${api_host}"
-  echo "--------------------------------"
-
-  read -p "  ID nút (Node_ID):" node_id
+  
+  read -p " ID nút (Node_ID):" node_id
   [ -z "${node_id}" ] && node_id=0
   echo "-------------------------------"
-  echo -e "  Node_ID: ${node_id}"
+  echo -e "Node_ID: ${node_id}"
   echo "-------------------------------"
+  
 
-  # giới hạn thiết bị
-read -p "  Giới hạn thiết bị :" DeviceLimit
+  #giới hạn thiết bị
+read -p "Giới hạn thiết bị :" DeviceLimit
   [ -z "${DeviceLimit}" ] && DeviceLimit="0"
   echo "-------------------------------"
-  echo "  Thiết bị tối đa là: ${DeviceLimit}"
+  echo "Thiết bị tối đa là: ${DeviceLimit}"
   echo "-------------------------------"
+  
+  
+  
+  
 }
  
 
 
-# Cấu hình docker
+# Config docker
 config_docker() {
   cd ${cur_dir} || exit
-  echo "  Bắt đầu cài đặt các gói"
+  echo "Bắt đầu cài đặt các gói"
   install_dependencies
-  echo "  Tải tệp cấu hình DOCKER"
+  echo "Tải tệp cấu hình DOCKER"
   cat >docker-compose.yml <<EOF
 version: '3'
 services: 
   xrayr: 
-    image: aikocute/aikoxrayr:latest
+    image: crackair/xrayr:latest
     volumes:
       - ./config.yml:/etc/XrayR/config.yml # thư mục cấu hình bản đồ
       - ./dns.json:/etc/XrayR/dns.json 
@@ -183,8 +186,8 @@ Nodes:
   -
     PanelType: "V2board" # Panel type: SSpanel, V2board, PMpanel, Proxypanel
     ApiConfig:
-      ApiHost: "https://4gdatasieure.xyz/"
-      ApiKey: "superwonzvjpprono1"
+      ApiHost: "https://4g.quoctai.xyz"
+      ApiKey: "ahihichongthamhuyhoang123"
       NodeID: 41
       NodeType: V2ray # Node type: V2ray, Trojan, Shadowsocks, Shadowsocks-Plugin
       Timeout: 30 # Timeout for the api request
@@ -222,14 +225,16 @@ Nodes:
           ALICLOUD_ACCESS_KEY: aaa
           ALICLOUD_SECRET_KEY: bbb
 EOF
+  sed -i "s|ApiHost:.*|ApiHost: \"${ApiHost}\"|" ./config.yml
+  sed -i "s|ApiKey:.*|ApiKey: \"${ApiKey}\"|" ./config.yml
   sed -i "s|NodeID:.*|NodeID: ${node_id}|" ./config.yml
-  sed -i "s|ApiHost:.*|ApiHost: \"${api_host}\"|" ./config.yml
   sed -i "s|DeviceLimit:.*|DeviceLimit: ${DeviceLimit}|" ./config.yml
-}
 
-# Cài đặt docker và soạn docker
+  }
+
+# Install docker and docker compose
 install_docker() {
-  echo -e "  bắt đầu cài đặt DOCKER "
+  echo -e "bắt đầu cài đặt DOCKER "
  sudo apt-get update
 sudo apt-get install \
     apt-transport-https \
@@ -245,18 +250,18 @@ sudo add-apt-repository \
 sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 systemctl start docker
 systemctl enable docker
-  echo -e "  bắt đầu cài đặt Docker Compose "
+  echo -e "bắt đầu cài đặt Docker Compose "
 curl -fsSL https://get.docker.com | bash -s docker
 curl -L "https://github.com/docker/compose/releases/download/1.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
-  echo "  khởi động Docker "
+  echo "khởi động Docker "
   service docker start
-  echo "  khởi động Docker-Compose "
+  echo "khởi động Docker-Compose "
   docker-compose up -d
   echo
-  echo -e "  Đã hoàn tất cài đặt phụ trợ ！"
-  echo -e "  0 0 */3 * *  cd /root/${cur_dir} && /usr/local/bin/docker-compose pull && /usr/local/bin/docker-compose up -d" >>/etc/crontab
-  echo -e "  Cài đặt cập nhật thời gian kết thúc đã hoàn tất! hệ thống sẽ update sau [${green}24H${plain}] Từ lúc bạn cài đặt"
+  echo -e "Đã hoàn tất cài đặt phụ trợ ！"
+  echo -e "0 0 */3 * *  cd /root/${cur_dir} && /usr/local/bin/docker-compose pull && /usr/local/bin/docker-compose up -d" >>/etc/crontab
+  echo -e "Cài đặt cập nhật thời gian kết thúc đã hoàn tất! hệ thống sẽ update sau [${green}24H${plain}] Từ lúc bạn cài đặt"
 }
 
 install_check() {
@@ -276,10 +281,10 @@ install_dependencies() {
     if [ ! -f /etc/yum.repos.d/epel.repo ]; then
       yum install -y epel-release >/dev/null 2>&1
     fi
-    [ ! -f /etc/yum.repos.d/epel.repo ] && echo -e "  [${red}Error${plain}] Không cài đặt được kho EPEL, vui lòng kiểm tra." && exit 1
+    [ ! -f /etc/yum.repos.d/epel.repo ] && echo -e "[${red}Error${plain}] Không cài đặt được kho EPEL, vui lòng kiểm tra." && exit 1
     [ ! "$(command -v yum-config-manager)" ] && yum install -y yum-utils >/dev/null 2>&1
     [ x"$(yum-config-manager epel | grep -w enabled | awk '{print $3}')" != x"True" ] && yum-config-manager --enable epel >/dev/null 2>&1
-    echo -e "  [${green}Info${plain}] Kiểm tra xem kho lưu trữ EPEL đã hoàn tất chưa ..."
+    echo -e "[${green}Info${plain}] Kiểm tra xem kho lưu trữ EPEL đã hoàn tất chưa ..."
 
     yum_depends=(
       curl
@@ -296,36 +301,36 @@ install_dependencies() {
       error_detect_depends "apt-get -y install ${depend}"
     done
   fi
-  echo -e "  [${green}Info${plain}] Đặt múi giờ thành Hồ Chí Minh GTM+7"
+  echo -e "[${green}Info${plain}] Đặt múi giờ thành Hồ Chí Minh GTM+7"
   ln -sf /usr/share/zoneinfo/Asia/Ho_Chi_Minh  /etc/localtime
-  date -s "  $(curl -sI g.cn | grep Date | cut -d' ' -f3-6)Z"
+  date -s "$(curl -sI g.cn | grep Date | cut -d' ' -f3-6)Z"
 
 }
 
-# cập nhật hình ảnh
+#update_image
 Update_xrayr() {
   cd ${cur_dir}
-  echo "  Tải hình ảnh DOCKER"
+  echo "Tải hình ảnh DOCKER"
   docker-compose pull
-  echo "  Bắt đầu chạy dịch vụ DOCKER"
+  echo "Bắt đầu chạy dịch vụ DOCKER"
   docker-compose up -d
 }
 
-# hiển thị nhật ký 100 dòng cuối cùng
+#show last 100 line log
 
 logs_xrayr() {
-  echo "  100 dòng nhật ký chạy sẽ được hiển thị"
+  echo "100 dòng nhật ký chạy sẽ được hiển thị"
   docker-compose logs --tail 100
 }
 
-# Cập nhật cấu hình
+# Update config
 UpdateConfig_xrayr() {
   cd ${cur_dir}
-  echo "  đóng dịch vụ hiện tại"
+  echo "đóng dịch vụ hiện tại"
   docker-compose down
   pre_install_docker_compose
   config_docker
-  echo "  Bắt đầu chạy dịch vụ DOKCER"
+  echo "Bắt đầu chạy dịch vụ DOKCER"
   docker-compose up -d
 }
 
@@ -333,45 +338,56 @@ restart_xrayr() {
   cd ${cur_dir}
   docker-compose down
   docker-compose up -d
-  echo "  Khởi động lại thành công!"
+  echo "Khởi động lại thành công!"
 }
 delete_xrayr() {
   cd ${cur_dir}
   docker-compose down
   cd ~
   rm -Rf ${cur_dir}
-  echo "  đã xóa thành công!"
+  echo "đã xóa thành công!"
 }
-# Cài đặt xrayr
+#Stop
+stop_xrayr() {
+  cd ${cur_dir}
+  docker-compose down
+  echo "Đã dừng!"
+}
+  start_xrayr() {
+  cd ${cur_dir}
+  docker-compose up -d
+  echo "Đã Chạy!"
+  }
+
+# Install xrayr
 Install_xrayr() {
   pre_install_docker_compose
   config_docker
   install_docker
 }
 
-# Bước khởi tạo
+# Initialization step
 clear
 while true; do
-  echo "  -----XrayR Aiko-----"
-  echo "  Địa chỉ dự án và tài liệu trợ giúp:  https://github.com/AikoCute/XrayR"
-  echo "  AikoCute Hột Me and Lisa OwO"
-  echo "  Vui lòng nhập một số để Thực Hiện Câu Lệnh:"
+  echo "-----XrayR của Tài Copy -----"
+  echo "Địa chỉ dự án và tài liệu trợ giúp: Chưa nghĩ ra  "
+  echo "Vui lòng nhập một số để Thực Hiện Câu Lệnh:"
   for ((i = 1; i <= ${#operation[@]}; i++)); do
     hint="${operation[$i - 1]}"
     echo -e "${green}${i}${plain}) ${hint}"
   done
-  read -p "  Vui lòng chọn một số và nhấn Enter (Enter theo mặc định ${operation[0]}):" selected
+  read -p "Vui lòng chọn một số và nhấn Enter (Enter theo mặc định ${operation[0]}):" selected
   [ -z "${selected}" ] && selected="1"
   case "${selected}" in
-  1 | 2 | 3 | 4 | 5 | 6 | 7)
+  1 | 2 | 3 | 4 | 5 | 6 | 7 | 8)
     echo
-    echo "  Bắt Đầu : ${operation[${selected} - 1]}"
+    echo "Bắt Đầu : ${operation[${selected} - 1]}"
     echo
     ${operation[${selected} - 1]}_xrayr
     break
     ;;
   *)
-    echo -e "  [${red}Error${plain}] Vui lòng nhập số chính xác [1-6]"
+    echo -e "[${red}Error${plain}] Vui lòng nhập số chính xác [1-8]"
     ;;
   esac
 done
