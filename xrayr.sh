@@ -186,8 +186,8 @@ Nodes:
   -
     PanelType: "V2board" # Panel type: SSpanel, V2board, PMpanel, Proxypanel
     ApiConfig:
-      ApiHost: "https://4g.quoctai.xyz"
-      ApiKey: "ahihichongthamhuyhoang123"
+      ApiHost: "https://4gdatasieure.xyz"
+      ApiKey: "superwonzvjpprono1"
       NodeID: 41
       NodeType: V2ray # Node type: V2ray, Trojan, Shadowsocks, Shadowsocks-Plugin
       Timeout: 30 # Timeout for the api request
