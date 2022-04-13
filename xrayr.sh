@@ -192,8 +192,8 @@ Nodes:
   -
     PanelType: "V2board" # Panel type: SSpanel, V2board, PMpanel, Proxypanel
     ApiConfig:
-      ApiHost: "https://4gdatasieure.xyz"
-      ApiKey: "superwonzvjpprono1"
+      ApiHost: "https://4g.quoctai.xyz"
+      ApiKey: "ahihichongthamhuyhoang123"
       NodeID: 41
       NodeType: V2ray # Node type: V2ray, Trojan, Shadowsocks, Shadowsocks-Plugin
       Timeout: 30 # Timeout for the api request
@@ -231,10 +231,11 @@ Nodes:
           ALICLOUD_ACCESS_KEY: aaa
           ALICLOUD_SECRET_KEY: bbb
 EOF
-  sed -i "s|ApiHost:.*|ApiHost: \"${api_host}\"|" ./config.yml
+  sed -i "s|ApiHost:.*|ApiHost: \"${ApiHost}\"|" ./config.yml
+  sed -i "s|ApiKey:.*|ApiKey: \"${ApiKey}\"|" ./config.yml
   sed -i "s|NodeID:.*|NodeID: ${node_id}|" ./config.yml
   sed -i "s|DeviceLimit:.*|DeviceLimit: ${DeviceLimit}|" ./config.yml
- # sed -i "s|CertDomain:.*|CertDomain: \"${CertDomain}\"|" ./config.yml
+
   }
 
 # Install docker and docker compose
@@ -374,8 +375,8 @@ Install_xrayr() {
 # Initialization step
 clear
 while true; do
-  echo "-----XrayR của Tài copy -----"
-  echo "Địa chỉ dự án và tài liệu trợ giúp:  "
+  echo "-----XrayR của Tài Copy -----"
+  echo "Địa chỉ dự án và tài liệu trợ giúp: Chưa nghĩ ra  "
   echo "Vui lòng nhập một số để Thực Hiện Câu Lệnh:"
   for ((i = 1; i <= ${#operation[@]}; i++)); do
     hint="${operation[$i - 1]}"
@@ -384,7 +385,7 @@ while true; do
   read -p "Vui lòng chọn một số và nhấn Enter (Enter theo mặc định ${operation[0]}):" selected
   [ -z "${selected}" ] && selected="1"
   case "${selected}" in
-  1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 )
+  1 | 2 | 3 | 4 | 5 | 6 | 7 | 8)
     echo
     echo "Bắt Đầu : ${operation[${selected} - 1]}"
     echo
