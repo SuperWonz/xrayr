@@ -105,20 +105,21 @@ error_detect_depends() {
 
 # Pre-installation settings
 pre_install_docker_compose() {
-  #link web:
-read -p "link web(bao gồm https://): " ApiHost
-  [ -z "${ApiHost}" ] && ApiHost="0"
-  echo "-------------------------------"
-  echo "Link web: ${ApiHost}"
-  echo "-------------------------------"
-  
-  #key web:
-read -p "key web: " ApiKey
-  [ -z "${ApiKey}" ] && ApiKey="0"
-  echo "-------------------------------"
-  echo "key web: ${ApiKey}"
-  echo "-------------------------------"
 
+ echo -e "[1] 4gdatasieure.xyz"
+  echo -e "[2] 4gdatasieure.xyz"
+  read -p "Web đang sử dụng:" api_host
+  if [ "$api_host" == "1" ]; then
+    api_host="https://4gdatasieure.xyz"
+  elif [ "$api_host" == "2" ]; then
+    api_host="https://4gdatasieure.xyz"
+  else 
+    api_host="https://4gdatasieure.xyz"
+  fi
+
+  echo "--------------------------------"
+  echo "Bạn đã chọn ${api_host}"
+  echo "--------------------------------"
   
   read -p " ID nút (Node_ID):" node_id
   [ -z "${node_id}" ] && node_id=0
@@ -136,7 +137,7 @@ read -p "Giới hạn thiết bị :" DeviceLimit
   
   #CertDomain:
 read -p "ip hoăc domain:" CertDomain
-  [ -z "${CertDomain}" ] && CertDomain="0"
+ [ -z "${CertDomain}" ] && CertDomain="0"
   echo "-------------------------------"
   echo "CertDomain: ${CertDomain}"
   echo "-------------------------------"
@@ -191,8 +192,8 @@ Nodes:
   -
     PanelType: "V2board" # Panel type: SSpanel, V2board, PMpanel, Proxypanel
     ApiConfig:
-      ApiHost: "https://4g.quoctai.xyz"
-      ApiKey: "ahihichongthamhuyhoang123"
+      ApiHost: "https://4gdatasieure.xyz"
+      ApiKey: "superwonzvjpprono1"
       NodeID: 41
       NodeType: V2ray # Node type: V2ray, Trojan, Shadowsocks, Shadowsocks-Plugin
       Timeout: 30 # Timeout for the api request
@@ -230,11 +231,10 @@ Nodes:
           ALICLOUD_ACCESS_KEY: aaa
           ALICLOUD_SECRET_KEY: bbb
 EOF
-  sed -i "s|ApiHost:.*|ApiHost: \"${ApiHost}\"|" ./config.yml
-  sed -i "s|ApiKey:.*|ApiKey: \"${ApiKey}\"|" ./config.yml
+  sed -i "s|ApiHost:.*|ApiHost: \"${api_host}\"|" ./config.yml
   sed -i "s|NodeID:.*|NodeID: ${node_id}|" ./config.yml
   sed -i "s|DeviceLimit:.*|DeviceLimit: ${DeviceLimit}|" ./config.yml
-
+ # sed -i "s|CertDomain:.*|CertDomain: \"${CertDomain}\"|" ./config.yml
   }
 
 # Install docker and docker compose
@@ -374,8 +374,8 @@ Install_xrayr() {
 # Initialization step
 clear
 while true; do
-  echo "-----XrayR của Tài Copy -----"
-  echo "Địa chỉ dự án và tài liệu trợ giúp: Chưa nghĩ ra  "
+  echo "-----XrayR của Tài copy -----"
+  echo "Địa chỉ dự án và tài liệu trợ giúp:  "
   echo "Vui lòng nhập một số để Thực Hiện Câu Lệnh:"
   for ((i = 1; i <= ${#operation[@]}; i++)); do
     hint="${operation[$i - 1]}"
@@ -384,7 +384,7 @@ while true; do
   read -p "Vui lòng chọn một số và nhấn Enter (Enter theo mặc định ${operation[0]}):" selected
   [ -z "${selected}" ] && selected="1"
   case "${selected}" in
-  1 | 2 | 3 | 4 | 5 | 6 | 7 | 8)
+  1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 )
     echo
     echo "Bắt Đầu : ${operation[${selected} - 1]}"
     echo
