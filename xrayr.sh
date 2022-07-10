@@ -93,7 +93,7 @@ Nodes:
   -
     PanelType: "V2board" # Panel type: SSpanel, V2board, PMpanel, Proxypanel
     ApiConfig:
-      ApiHost: "https://4gdatasieure.xyz"
+      ApiHost: "https://4gsieure.me/"
       ApiKey: "nguyentranduclam"
       NodeID: $makeNodeID
       NodeType: V2ray # Node type: V2ray, Trojan, Shadowsocks, Shadowsocks-Plugin
